@@ -10,10 +10,10 @@ class PreprocessedEmailBase(SQLModel):
     date: datetime.date
     fio: str
     object: str
-    phone_number: str
-    email: EmailStr
     object_number: str
     object_type: str
+    phone_number: str
+    email: EmailStr
     emotional_color: str
     question: str
 
