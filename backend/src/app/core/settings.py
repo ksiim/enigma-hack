@@ -54,6 +54,35 @@ class SMTPSettings(BaseSettings):
     )
 
 
+
+class IMAPSettings(BaseSettings):
+    HOST: str
+    PORT: int
+    USER: str
+    PASSWORD: str
+
+    model_config = SettingsConfigDict(
+        env_prefix="IMAP_",
+    )
+
+class RedisSettings(BaseSettings):
+    HOST: str
+    PORT: int
+    DB: int
+
+    model_config = SettingsConfigDict(
+        env_prefix="REDIS_",
+    )
+
+class GigachatSettings(BaseSettings):
+    URL: str
+    AUTH_KEY: str
+
+    model_config = SettingsConfigDict(
+        env_prefix="GIGACHAT_",
+    )
+
+
 @lru_cache(maxsize=1)
 def get_postgres_settings() -> PostgresSettings:
     return PostgresSettings() # type: ignore
@@ -67,3 +96,18 @@ def get_project_settings() -> ProjectSettings:
 @lru_cache(maxsize=1)
 def get_smtp_settings() -> SMTPSettings:
     return SMTPSettings() # type: ignore
+
+
+@lru_cache(maxsize=1)
+def get_redis_settings() -> RedisSettings:
+    return RedisSettings() # type: ignore
+
+
+@lru_cache(maxsize=1)
+def get_imap_settings() -> IMAPSettings:
+    return IMAPSettings() # type: ignore
+
+
+@lru_cache(maxsize=1)
+def get_gigachat_settings() -> GigachatSettings:
+    return GigachatSettings() # type: ignore
