@@ -3,6 +3,7 @@ import { Button, IconButton } from '@chakra-ui/react';
 import { IoSync } from 'react-icons/io5';
 import { PiFileCsvDuotone } from 'react-icons/pi';
 import { RiFileExcel2Line } from 'react-icons/ri';
+import './ActionsButtons.css';
 
 interface ActionButtonsProps {
   onSync: () => void;
@@ -23,13 +24,14 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
         aria-label="Синхронизировать"
         onClick={onSync}
         loading={isSyncing}
+        className="action-btn-sync"
       >
         <IoSync />
       </IconButton>
-      <Button onClick={onCsvDownload}>
+      <Button onClick={onCsvDownload} className="action-btn-csv">
         <PiFileCsvDuotone /> Скачать CSV
       </Button>
-      <Button onClick={onXlsxDownload}>
+      <Button onClick={onXlsxDownload} className="action-btn-xlsx">
         <RiFileExcel2Line /> Скачать Excel (.xlsx)
       </Button>
     </div>
