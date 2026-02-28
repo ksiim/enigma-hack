@@ -301,3 +301,21 @@
 .sort-button svg {
   font-size: 18px;
 }
+
+.pagination-button {
+  background: white !important;
+  border: 2px solid #475673 !important;
+  color: #475673 !important;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 !important;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background: #e8ecf0 !important;
+}
+
+.pagination-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

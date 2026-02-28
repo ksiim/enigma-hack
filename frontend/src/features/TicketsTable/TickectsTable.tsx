@@ -1,6 +1,6 @@
 import React from 'react';
-import { Collapsible, Spinner, Table } from '@chakra-ui/react';
-import { FaCircle } from 'react-icons/fa';
+import { Collapsible, Spinner, Table, Button, HStack, Text } from '@chakra-ui/react';
+import { FaCircle, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import type { Ticket, ToneType } from '../../components/EmailTable/emails-table.model';
 
 interface TicketsTableProps {
@@ -10,6 +10,9 @@ interface TicketsTableProps {
   onSelectTicket: (ticket: Ticket) => void;
   getToneColor: (tone: ToneType) => string;
   formatDate: (date: string) => string;
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
   detailContent?: React.ReactNode;
 }
 
@@ -22,6 +25,9 @@ const TicketsTable: React.FC<TicketsTableProps> = ({
   onSelectTicket,
   getToneColor,
   formatDate,
+  currentPage,
+  totalPages,
+  onPageChange,
   detailContent
 }) => {
   if (syncing) {
@@ -33,53 +39,86 @@ const TicketsTable: React.FC<TicketsTableProps> = ({
   }
 
   return (
-    <Table.Root className="ticket-table" variant="outline" borderColor="gray.300" native>
-      <Table.Header>
-        <Table.Row>
-          <Table.ColumnHeader>Дата</Table.ColumnHeader>
-          <Table.ColumnHeader>ФИО</Table.ColumnHeader>
-          <Table.ColumnHeader>Объект</Table.ColumnHeader>
-          <Table.ColumnHeader>Телефон</Table.ColumnHeader>
-          <Table.ColumnHeader>Email</Table.ColumnHeader>
-          <Table.ColumnHeader>Заводские номера</Table.ColumnHeader>
-          <Table.ColumnHeader>Тип приборов</Table.ColumnHeader>
-          <Table.ColumnHeader>Эмоц. окрас</Table.ColumnHeader>
-          <Table.ColumnHeader textAlign="end">Суть вопроса</Table.ColumnHeader>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {tickets.map((ticket: Ticket) => (
-          <React.Fragment key={ticket.id}>
-            <Table.Row
-              onClick={() => onSelectTicket(ticket)}
-              className={`ticket-row ${selectedTicket?.id === ticket.id ? 'selected' : ''}`}>
-              <Table.Cell>{formatDate(ticket.date)}</Table.Cell>
-              <Table.Cell>{ticket.fullName}</Table.Cell>
-              <Table.Cell>{ticket.object}</Table.Cell>
-              <Table.Cell>{ticket.phone}</Table.Cell>
-              <Table.Cell>{ticket.email}</Table.Cell>
-              <Table.Cell>{ticket.serialNumbers}</Table.Cell>
-              <Table.Cell>{ticket.deviceType}</Table.Cell>
-              <Table.Cell>
-                <FaCircle color={getToneColor(ticket.emotionalTone)} />
-              </Table.Cell>
-              <Table.Cell textAlign="end">{ticket.issueSummary}</Table.Cell>
-            </Table.Row>
-            {selectedTicket?.id === ticket.id && detailContent && (
-              <Table.Row className="ticket-detail-row">
-                <Table.Cell colSpan={COLUMN_COUNT} className="ticket-detail-cell">
-                  <Collapsible.Root open unmountOnExit={false}>
-                    <Collapsible.Content>
-                      {detailContent}
-                    </Collapsible.Content>
-                  </Collapsible.Root>
+    <>
+      <Table.Root className="ticket-table" variant="outline" borderColor="gray.300" native>
+        <Table.Header>
+          <Table.Row>
+            <Table.ColumnHeader>Дата</Table.ColumnHeader>
+            <Table.ColumnHeader>ФИО</Table.ColumnHeader>
+            <Table.ColumnHeader>Объект</Table.ColumnHeader>
+            <Table.ColumnHeader>Телефон</Table.ColumnHeader>
+            <Table.ColumnHeader>Email</Table.ColumnHeader>
+            <Table.ColumnHeader>Заводские номера</Table.ColumnHeader>
+            <Table.ColumnHeader>Тип приборов</Table.ColumnHeader>
+            <Table.ColumnHeader>Эмоц. окрас</Table.ColumnHeader>
+            <Table.ColumnHeader textAlign="end">Суть вопроса</Table.ColumnHeader>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          {tickets.map((ticket: Ticket) => (
+            <React.Fragment key={ticket.id}>
+              <Table.Row
+                onClick={() => onSelectTicket(ticket)}
+                className={`ticket-row ${selectedTicket?.id === ticket.id ? 'selected' : ''}`}>
+                <Table.Cell>{formatDate(ticket.date)}</Table.Cell>
+                <Table.Cell>{ticket.fullName}</Table.Cell>
+                <Table.Cell>{ticket.object}</Table.Cell>
+                <Table.Cell>{ticket.phone}</Table.Cell>
+                <Table.Cell>{ticket.email}</Table.Cell>
+                <Table.Cell>
+                  {Array.isArray(ticket.serialNumbers) 
+                    ? ticket.serialNumbers.join(', ') 
+                    : ticket.serialNumbers || '-'}
                 </Table.Cell>
+                <Table.Cell>{ticket.deviceType || '-'}</Table.Cell>
+                <Table.Cell>
+                  <FaCircle color={getToneColor(ticket.emotionalTone)} />
+                </Table.Cell>
+                <Table.Cell textAlign="end">{ticket.issueSummary}</Table.Cell>
               </Table.Row>
-            )}
-          </React.Fragment>
-        ))}
-      </Table.Body>
-    </Table.Root>
+              {selectedTicket?.id === ticket.id && detailContent && (
+                <Table.Row className="ticket-detail-row">
+                  <Table.Cell colSpan={COLUMN_COUNT} className="ticket-detail-cell">
+                    <Collapsible.Root open unmountOnExit={false}>
+                      <Collapsible.Content>
+                        {detailContent}
+                      </Collapsible.Content>
+                    </Collapsible.Root>
+                  </Table.Cell>
+                </Table.Row>
+              )}
+            </React.Fragment>
+          ))}
+        </Table.Body>
+      </Table.Root>
+
+      {/* Пагинация */}
+      {totalPages > 0 && (
+        <HStack justify="flex-end" mt={4} spaceX={2} spaceY={2}>
+          <Button
+            size="sm"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={currentPage === 0}
+            className="pagination-button"
+          >
+            <FaChevronLeft />
+          </Button>
+          
+          <Text fontSize="sm" mx={2}>
+            Страница {currentPage + 1} из {totalPages}
+          </Text>
+          
+          <Button
+            size="sm"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={currentPage === totalPages - 1}
+            className="pagination-button"
+          >
+            <FaChevronRight />
+          </Button>
+        </HStack>
+      )}
+    </>
   );
 };
 

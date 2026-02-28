@@ -2,12 +2,12 @@ import React from 'react';
 import { Button, Spinner } from '@chakra-ui/react';
 
 interface AiResponseProps {
-  ticketId: number;
+  ticketId: string;
   aiResponse: string;
   isGenerating: boolean;
-  onGenerate: (ticketId: number) => void;
-  onSend: (ticketId: number) => void;
-  onResponseChange: (ticketId: number, value: string) => void;
+  onGenerate: (ticketId: string) => void;
+  onSend: (ticketId: string) => void;
+  onResponseChange: (ticketId: string, value: string) => void;
 }
 
 const AiResponse: React.FC<AiResponseProps> = ({
