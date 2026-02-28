@@ -276,3 +276,28 @@
   margin: 0;
   font-size: 14px;
 }
+
+.controls-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.sort-button {
+  background: white !important;
+  border: 2px solid #475673 !important;
+  color: #475673 !important;
+  font-weight: 500 !important;
+  transition: all 0.2s !important;
+}
+
+.sort-button:hover {
+  background: #e8ecf0 !important;
+}
+
+.sort-button svg {
+  font-size: 18px;
+}

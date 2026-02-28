@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Spinner } from '@chakra-ui/react';
+import { Spinner, Button } from '@chakra-ui/react';
 import * as XLSX from 'xlsx';
 import './EmailsTable.css';
 import type { Ticket, ToneType } from './emails-table.model';
@@ -9,6 +9,9 @@ import AiResponse from '../../features/AiResponse/AiResponse';
 import DetailsHeader from '../../features/MessageDetailsHeader/MessageDetailsHeader';
 import TicketsTable from '../../features/TicketsTable/TickectsTable';
 import { mockTickets } from './tickets.mock';
+import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
+
+type SortOrder = 'asc' | 'desc';
 
 const EmailsTable: React.FC = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -17,6 +20,7 @@ const EmailsTable: React.FC = () => {
   const [syncing, setSyncing] = useState<boolean>(false);
   const [generatingId, setGeneratingId] = useState<number | null>(null);
   const [aiResponses, setAiResponses] = useState<Record<number, string>>({});
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc'); // По умолчанию сначала новые
 
   useEffect(() => {
     setTimeout(() => {
@@ -141,18 +145,45 @@ const EmailsTable: React.FC = () => {
     });
   };
 
+  const handleSortByDate = (): void => {
+    const newSortOrder: SortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    setSortOrder(newSortOrder);
+
+    const sortedTickets = [...tickets].sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+
+      return newSortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+
+    setTickets(sortedTickets);
+  };
+
   if (loading) {
     return <div className='spinner-wrapper'><Spinner size="lg" /></div>;
   }
 
   return (
     <div className="ticket-system">
-      <ActionButtons
-        onSync={handleSync}
-        onCsvDownload={downloadCsv}
-        onXlsxDownload={downloadXlsx}
-        isSyncing={syncing}
-      />
+      <div className="controls-header">
+        <ActionButtons
+          onSync={handleSync}
+          onCsvDownload={downloadCsv}
+          onXlsxDownload={downloadXlsx}
+          isSyncing={syncing}
+        />
+
+        {!syncing && (
+          <Button
+            onClick={handleSortByDate}
+            size="sm"
+            className="sort-button"
+          >
+            {sortOrder === 'asc' ? 'Сначала старые' : 'Сначала новые'}
+            {sortOrder === 'asc' ? <FaChevronUp /> : <FaChevronDown />}
+          </Button>
+        )}
+      </div>
 
       <TicketsTable
         tickets={tickets}

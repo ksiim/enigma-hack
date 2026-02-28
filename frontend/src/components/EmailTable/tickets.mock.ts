@@ -4,7 +4,7 @@ import type { Ticket } from "./emails-table.model";
 export const mockTickets: Ticket[] = [
     {
       id: 1,
-      date: '2024-02-24T10:30:00',
+      date: '2024-07-24T10:30:00',
       fullName: 'Иван Петров',
       object: 'Котельная №3',
       phone: '+7 (999) 123-45-67',
@@ -17,7 +17,7 @@ export const mockTickets: Ticket[] = [
     },
     {
       id: 2,
-      date: '2024-02-24T09:15:00',
+      date: '2024-05-24T09:15:00',
       fullName: 'Елена Смирнова',
       object: 'ТЦ "Меркурий"',
       phone: '+7 (495) 234-56-78',
@@ -30,7 +30,7 @@ export const mockTickets: Ticket[] = [
     },
     {
       id: 3,
-      date: '2024-02-24T08:45:00',
+      date: '2024-01-24T08:45:00',
       fullName: 'Алексей Иванов',
       object: 'Завод "Металлист"',
       phone: '+7 (343) 345-67-89',
