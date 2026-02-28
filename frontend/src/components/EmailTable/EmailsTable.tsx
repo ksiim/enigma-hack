@@ -21,30 +21,33 @@ interface ApiTicket {
   date: string;
   fio: string | null;
   object: string | null;
-  object_number: string | null; // В API это строка, но в нашей модели массив
+  object_number: string | null;
   object_type: string | null;
   phone_number: string | null;
   email: string;
-  emotional_color: string; // positive, neutral, negative, angry
+  emotional_color: string;
   question: string;
   short_question: string;
 }
+
+// interface AiResponseData {
+//   help_answer: string;
+//   preprocessed_email_id: string;
+// }
 
 const EmailsTable: React.FC = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [syncing, setSyncing] = useState<boolean>(false);
-  const [generatingId, setGeneratingId] = useState<string | null>(null); // изменили на string
-  const [aiResponses, setAiResponses] = useState<Record<string, string>>({}); // изменили на string
+  const [generatingId, setGeneratingId] = useState<string | null>(null);
+  const [aiResponses, setAiResponses] = useState<Record<string, string>>({});
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
-  // const [downloading, setDownloading] = useState<'csv' | 'xlsx' | null>(null);
   
   // Пагинация
   const [currentPage, setCurrentPage] = useState<number>(0);
-  // const [totalCount, setTotalCount] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(0);
-  const [pageSize] = useState<number>(3); // по 3 элемента на страницу
+  const [pageSize] = useState<number>(3);
   
 
   const fetchTickets = async (skip: number = 0, limit: number = 3) => {
@@ -58,7 +61,6 @@ const EmailsTable: React.FC = () => {
       
       const data: ApiResponse = await response.json();
       
-      // Преобразуем API ответ в наш формат Ticket
       const transformedTickets: Ticket[] = data.data.map(apiTicket => ({
         id: apiTicket.id,
         date: apiTicket.date,
@@ -66,17 +68,14 @@ const EmailsTable: React.FC = () => {
         object: apiTicket.object,
         phone: apiTicket.phone_number,
         email: apiTicket.email,
-        // Преобразуем object_number в массив, если это строка
         serialNumbers: apiTicket.object_number ? [apiTicket.object_number] : null,
         deviceType: apiTicket.object_type,
-        // Маппинг emotional_color на ToneType
         emotionalTone: mapEmotionalColor(apiTicket.emotional_color),
         issueSummary: apiTicket.short_question,
         originalMessage: apiTicket.question,
       }));
       
       setTickets(transformedTickets);
-      // setTotalCount(data.count);
       setTotalPages(Math.ceil(data.count / limit));
       setLoading(false);
     } catch (error) {
@@ -85,7 +84,6 @@ const EmailsTable: React.FC = () => {
     }
   };
 
-  // Функция для маппинга emotional_color из API в ToneType
   const mapEmotionalColor = (color: string): ToneType => {
     switch (color.toLowerCase()) {
       case 'positive':
@@ -95,7 +93,7 @@ const EmailsTable: React.FC = () => {
       case 'negative':
         return 'negative';
       case 'angry':
-        return 'negative'; // маппим angry на negative для совместимости с UI
+        return 'negative';
       default:
         return 'neutral';
     }
@@ -103,7 +101,7 @@ const EmailsTable: React.FC = () => {
 
   useEffect(() => {
     fetchTickets(0, pageSize);
-  }, []); // Загружаем при монтировании
+  }, []);
 
   const getToneColor = (tone: ToneType): string => {
     const icons: Record<ToneType, string> = {
@@ -117,7 +115,6 @@ const EmailsTable: React.FC = () => {
 
   const handleSync = (): void => {
     setSyncing(true);
-    // При синхронизации перезагружаем первую страницу
     fetchTickets(0, pageSize).then(() => {
       setSyncing(false);
       setCurrentPage(0);
@@ -128,34 +125,58 @@ const EmailsTable: React.FC = () => {
     setCurrentPage(newPage);
     const skip = newPage * pageSize;
     fetchTickets(skip, pageSize);
-    setSelectedTicket(null); // Сбрасываем выбранный тикет при смене страницы
+    setSelectedTicket(null);
   };
 
-  const handleGenerateResponse = (ticketId: string): void => {
+  const handleGenerateResponse = async (ticketId: string): Promise<void> => {
+  try {
     setGeneratingId(ticketId);
+    
+    const response = await fetch(`http://localhost:8000/api/v1/preprocessed_email/help-answer?preprocessed_email_id=${ticketId}`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
 
-    setTimeout(() => {
-      const mockResponses: Record<string, string> = {
-        'negative': 'Уважаемый клиент! Приносим извинения за доставленные неудобства. Наши специалисты уже работают над решением вашей проблемы. Пожалуйста, ожидайте, мы свяжемся с вами в ближайшее время.',
-        'neutral': 'Здравствуйте! Благодарим за обращение. Для решения вашего вопроса нам нужно уточнить некоторые детали. Напишите, пожалуйста, удобное время для звонка.',
-        'positive': 'Здравствуйте! Рады, что вы обратились к нам. С удовольствием поможем вам с интеграцией. Направляем ссылку на документацию: https://docs.example.com/api'
-      };
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
-      const ticket = tickets.find(t => t.id === ticketId);
-      const tone = ticket?.emotionalTone || 'neutral';
+    // Получаем строку с экранированными символами
+    const rawData = await response.text();
+    
+    // Убираем внешние кавычки, если они есть
+    const cleanedData = rawData.replace(/^"|"$/g, '');
+    
+    // Заменяем экранированные символы на реальные
+    const formattedData = cleanedData
+      .replace(/\\n/g, '\n')  // Заменяем \n на реальные переносы строк
+      .replace(/\\"/g, '"')    // Заменяем экранированные кавычки
+      .replace(/\\t/g, '\t');  // Заменяем табуляцию, если есть
+    
+    console.log('Отформатированный ответ:', formattedData);
+    
+    setAiResponses(prev => ({
+      ...prev,
+      [ticketId]: formattedData,
+    }));
 
-      setAiResponses(prev => ({
-        ...prev,
-        [ticketId]: mockResponses[tone] || 'Спасибо за обращение! Мы обработаем ваш запрос и свяжемся с вами.'
-      }));
-
-      setGeneratingId(null);
-    }, 2000);
-  };
+  } catch (error) {
+    console.error('Ошибка генерации ответа:', error);
+    
+    setAiResponses(prev => ({
+      ...prev,
+      [ticketId]: 'Извините, не удалось сгенерировать ответ. Попробуйте позже.',
+    }));
+    
+  } finally {
+    setGeneratingId(null);
+  }
+};
 
   const downloadFile = async (type: 'csv' | 'xlsx'): Promise<void> => {
     try {      
-      // setDownloading(type);
       const endpoint = type === 'csv' 
         ? 'http://localhost:8000/api/v1/preprocessed_email/csv?skip=0&limit=1000'
         : 'http://localhost:8000/api/v1/preprocessed_email/xlsx?skip=0&limit=1000';
@@ -186,8 +207,6 @@ const EmailsTable: React.FC = () => {
 
     } catch (error) {
       console.error(`Ошибка скачивания ${type.toUpperCase()}:`, error);
-    } finally {
-      // setDownloading(null);
     }
   };
 
@@ -201,7 +220,6 @@ const EmailsTable: React.FC = () => {
         : t
     ));
     setSelectedTicket(null);
-    alert('Ответ отправлен');
   };
 
   const formatDate = (dateString: string): string => {
@@ -240,7 +258,6 @@ const EmailsTable: React.FC = () => {
           onCsvDownload={downloadCsv}
           onXlsxDownload={downloadXlsx}
           isSyncing={syncing}
-          // isDownloading={downloading}
         />
 
         {!syncing && (
@@ -248,7 +265,6 @@ const EmailsTable: React.FC = () => {
             onClick={handleSortByDate}
             size="sm"
             className="sort-button"
-            // isDisabled={!!downloading}
           >
             {sortOrder === 'asc' ? 'Сначала старые' : 'Сначала новые'}
             {sortOrder === 'asc' ? <FaChevronUp /> : <FaChevronDown />}
