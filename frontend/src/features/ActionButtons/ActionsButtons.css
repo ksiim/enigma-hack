@@ -1,0 +1,54 @@
+.action-buttons {
+  margin-bottom: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.action-buttons .action-btn-sync {
+  background: white !important;
+  border: 2px solid #475673 !important;
+  color: #475673 !important;
+  border-radius: 8px;
+}
+
+.action-buttons .action-btn-sync:hover {
+  background: #e8ecf0 !important;
+}
+
+.action-buttons .action-btn-csv,
+.action-buttons .action-btn-xlsx {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.action-buttons .action-btn-csv {
+  background: white !important;
+  border: 2px solid #475673 !important;
+  color: #475673 !important;
+}
+
+.action-buttons .action-btn-csv:hover {
+  background: #e8ecf0 !important;
+}
+
+.action-buttons .action-btn-xlsx {
+  background: white !important;
+  border: 2px solid #217346 !important;
+  color: #217346 !important;
+}
+
+.action-buttons .action-btn-xlsx:hover {
+  background: #e8f5e9 !important;
+}
+
+@media (max-width: 1024px) {
+  .action-buttons {
+    flex-wrap: wrap;
+  }
+}

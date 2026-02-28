@@ -161,28 +161,29 @@ const EmailsTable: React.FC = () => {
         onSelectTicket={setSelectedTicket}
         getToneColor={getToneColor}
         formatDate={formatDate}
+        detailContent={
+          selectedTicket ? (
+            <div className="ticket-detail">
+              <DetailsHeader onClose={() => setSelectedTicket(null)} />
+
+              <div className="detail-content">
+                <MessageDetails ticket={selectedTicket} formatDate={formatDate} />
+
+                <AiResponse
+                  ticketId={selectedTicket.id}
+                  aiResponse={aiResponses[selectedTicket.id] || ''}
+                  isGenerating={generatingId === selectedTicket.id}
+                  onGenerate={handleGenerateResponse}
+                  onSend={handleSendResponse}
+                  onResponseChange={(id, value) =>
+                    setAiResponses(prev => ({ ...prev, [id]: value }))
+                  }
+                />
+              </div>
+            </div>
+          ) : null
+        }
       />
-
-      {selectedTicket && (
-        <div className="ticket-detail">
-          <DetailsHeader onClose={() => setSelectedTicket(null)} />
-
-          <div className="detail-content">
-            <MessageDetails ticket={selectedTicket} formatDate={formatDate} />
-
-            <AiResponse
-              ticketId={selectedTicket.id}
-              aiResponse={aiResponses[selectedTicket.id] || ''}
-              isGenerating={generatingId === selectedTicket.id}
-              onGenerate={handleGenerateResponse}
-              onSend={handleSendResponse}
-              onResponseChange={(id, value) =>
-                setAiResponses(prev => ({ ...prev, [id]: value }))
-              }
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };

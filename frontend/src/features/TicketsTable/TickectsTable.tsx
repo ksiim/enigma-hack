@@ -1,5 +1,5 @@
 import React from 'react';
-import { Spinner, Table } from '@chakra-ui/react';
+import { Collapsible, Spinner, Table } from '@chakra-ui/react';
 import { FaCircle } from 'react-icons/fa';
 import type { Ticket, ToneType } from '../../components/EmailTable/emails-table.model';
 
@@ -10,7 +10,10 @@ interface TicketsTableProps {
   onSelectTicket: (ticket: Ticket) => void;
   getToneColor: (tone: ToneType) => string;
   formatDate: (date: string) => string;
+  detailContent?: React.ReactNode;
 }
+
+const COLUMN_COUNT = 9;
 
 const TicketsTable: React.FC<TicketsTableProps> = ({
   tickets,
@@ -18,7 +21,8 @@ const TicketsTable: React.FC<TicketsTableProps> = ({
   syncing,
   onSelectTicket,
   getToneColor,
-  formatDate
+  formatDate,
+  detailContent
 }) => {
   if (syncing) {
     return (
@@ -29,8 +33,8 @@ const TicketsTable: React.FC<TicketsTableProps> = ({
   }
 
   return (
-    <Table.Root variant="outline" borderColor="gray.300">
-      <Table.Header bg="gray.200">
+    <Table.Root className="ticket-table" variant="outline" borderColor="gray.300" native>
+      <Table.Header>
         <Table.Row>
           <Table.ColumnHeader>Дата</Table.ColumnHeader>
           <Table.ColumnHeader>ФИО</Table.ColumnHeader>
@@ -45,22 +49,34 @@ const TicketsTable: React.FC<TicketsTableProps> = ({
       </Table.Header>
       <Table.Body>
         {tickets.map((ticket: Ticket) => (
-          <Table.Row
-            key={ticket.id}
-            onClick={() => onSelectTicket(ticket)}
-            className={`ticket-row ${selectedTicket?.id === ticket.id ? 'selected' : ''}`}>
-            <Table.Cell>{formatDate(ticket.date)}</Table.Cell>
-            <Table.Cell>{ticket.fullName}</Table.Cell>
-            <Table.Cell>{ticket.object}</Table.Cell>
-            <Table.Cell>{ticket.phone}</Table.Cell>
-            <Table.Cell>{ticket.email}</Table.Cell>
-            <Table.Cell>{ticket.serialNumbers}</Table.Cell>
-            <Table.Cell>{ticket.deviceType}</Table.Cell>
-            <Table.Cell>
-              <FaCircle color={getToneColor(ticket.emotionalTone)} />
-            </Table.Cell>
-            <Table.Cell textAlign="end">{ticket.issueSummary}</Table.Cell>
-          </Table.Row>
+          <React.Fragment key={ticket.id}>
+            <Table.Row
+              onClick={() => onSelectTicket(ticket)}
+              className={`ticket-row ${selectedTicket?.id === ticket.id ? 'selected' : ''}`}>
+              <Table.Cell>{formatDate(ticket.date)}</Table.Cell>
+              <Table.Cell>{ticket.fullName}</Table.Cell>
+              <Table.Cell>{ticket.object}</Table.Cell>
+              <Table.Cell>{ticket.phone}</Table.Cell>
+              <Table.Cell>{ticket.email}</Table.Cell>
+              <Table.Cell>{ticket.serialNumbers}</Table.Cell>
+              <Table.Cell>{ticket.deviceType}</Table.Cell>
+              <Table.Cell>
+                <FaCircle color={getToneColor(ticket.emotionalTone)} />
+              </Table.Cell>
+              <Table.Cell textAlign="end">{ticket.issueSummary}</Table.Cell>
+            </Table.Row>
+            {selectedTicket?.id === ticket.id && detailContent && (
+              <Table.Row className="ticket-detail-row">
+                <Table.Cell colSpan={COLUMN_COUNT} className="ticket-detail-cell">
+                  <Collapsible.Root open unmountOnExit={false}>
+                    <Collapsible.Content>
+                      {detailContent}
+                    </Collapsible.Content>
+                  </Collapsible.Root>
+                </Table.Cell>
+              </Table.Row>
+            )}
+          </React.Fragment>
         ))}
       </Table.Body>
     </Table.Root>

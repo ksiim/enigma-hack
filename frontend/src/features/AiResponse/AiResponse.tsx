@@ -33,7 +33,6 @@ const AiResponse: React.FC<AiResponseProps> = ({
           placeholder='Ответ...'
           value={aiResponse || ''}
           onChange={(e) => onResponseChange(ticketId, e.target.value)}
-          rows={6}
         />
       )}
 

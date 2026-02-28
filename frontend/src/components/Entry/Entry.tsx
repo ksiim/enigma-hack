@@ -11,7 +11,7 @@ export default function Entry() {
 
   return (
     <div className="wrapper">
-      <Header setPage={setPage} />
+      <Header page={page} setPage={setPage} />
 
       <main>
         {page === "knowledgeBase" && <KnowledgeBase />}

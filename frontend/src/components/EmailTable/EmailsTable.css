@@ -1,72 +1,49 @@
 .ticket-system {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  font-family: "Montserrat", system-ui, sans-serif;
   max-width: 1400px;
   margin: 0 auto;
   padding: 20px;
+  background: white;
+  border-radius: 12px;
+
 }
 
 .loading {
   text-align: center;
   padding: 40px;
   font-size: 18px;
-  color: #2c3e50;
-}
-
-.action-buttons {
-  margin-bottom: 20px;
-  display: flex;
-  gap: 10px;
-}
-
-.action-buttons :global(.chakra-button) {
-  background: white !important;
-  border: 1px solid #0061a5 !important;
-  color: #0061a5 !important;
-}
-
-.action-buttons :global(.chakra-button:hover) {
-  background: #e6f0fa !important;
-}
-
-.action-buttons :global(.chakra-icon-button) {
-  background: white !important;
-  border: 1px solid #0061a5 !important;
-  color: #0061a5 !important;
-}
-
-.action-buttons :global(.chakra-icon-button:hover) {
-  background: #e6f0fa !important;
+  color: #2A2A2A;
 }
 
 .ticket-table {
   width: 100%;
   border-collapse: collapse;
   background: white;
-  box-shadow: 0 4px 12px rgba(0, 97, 165, 0.15);
-  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(42, 42, 42, 0.08);
+  border-radius: 12px;
   overflow: hidden;
-  border: 1px solid #c0d0e0;
+  border: 2px solid #c8ced8;
 }
 
 .ticket-table th {
-  background: #0061a5;
-  padding: 12px;
+  background: #475673;
+  padding: 14px 16px;
   text-align: left;
   font-weight: 600;
   color: white;
-  border-bottom: 2px solid #004a80;
+  border-bottom: 2px solid #3d4a5f;
   font-size: 14px;
 }
 
 .ticket-table td {
-  padding: 12px;
-  border-bottom: 1px solid #d0ddee;
-  font-size: 13px;
-  color: #1e2a3a;
+  padding: 14px 16px;
+  border-bottom: 2px solid #f0f0f0;
+  font-size: 12px;
+  color: #2A2A2A;
 }
 
 .ticket-table tbody tr:nth-child(even) {
-  background-color: #f5f9ff;
+  background-color: #fafafa;
 }
 
 .ticket-table tbody tr:nth-child(odd) {
@@ -79,13 +56,13 @@
 }
 
 .ticket-row:hover {
-  background-color: #e1ecfe !important;
+  background-color: #f5f5f5 !important;
 }
 
 .ticket-row.selected {
-  background-color: #cde0fe !important;
-  border-left: 4px solid #0061a5;
-  box-shadow: inset 0 0 0 1px #0061a5;
+  background-color: #f0f0f0 !important;
+  border-left: 4px solid #2A2A2A;
+  box-shadow: inset 0 0 0 1px #e0e0e0;
 }
 
 .important-flag {
@@ -98,19 +75,34 @@
   filter: brightness(0.9);
 }
 
+.ticket-detail-row {
+  background: white;
+}
+
+.ticket-detail-row .ticket-detail-cell {
+  padding: 0;
+  vertical-align: top;
+  border-bottom: none;
+  border-top: none;
+}
+
+.ticket-detail-row .ticket-detail-cell .ticket-detail {
+  margin-top: 0;
+}
+
 .ticket-detail {
   margin-top: 20px;
   background: white;
-  border: 2px solid #0061a5;
+  border: 3px solid #475673;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 97, 165, 0.15);
+  box-shadow: 0 4px 12px rgba(71, 86, 115, 0.2);
 }
 
 .detail-header {
   padding: 15px 20px;
-  background: #0061a5;
-  border-bottom: 2px solid #004a80;
+  background: #475673;
+  border-bottom: 3px solid #3d4a5f;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -142,20 +134,24 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
+  min-height: 400px;
 }
 
 .original-message, .ai-response {
   padding: 15px;
-  background: #f5f9ff;
+  background: #f5f7fa;
   border-radius: 8px;
-  border: 1px solid #c0d0e0;
+  border: 2px solid #c8ced8;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .original-message h4, .ai-response h4 {
   margin-top: 0;
   margin-bottom: 15px;
-  color: #004a80;
-  border-bottom: 2px solid #0061a5;
+  color: #475673;
+  border-bottom: 3px solid #475673;
   padding-bottom: 10px;
   font-weight: 600;
 }
@@ -166,7 +162,7 @@
 }
 
 .original-message strong {
-  color: #004a80;
+  color: #475673;
   font-weight: 600;
 }
 
@@ -174,7 +170,7 @@
   background: white;
   padding: 15px;
   border-radius: 4px;
-  border: 1px solid #c0d0e0;
+  border: 2px solid #c8ced8;
   margin-top: 10px;
   min-height: 100px;
   white-space: pre-wrap;
@@ -184,20 +180,23 @@
 
 .response-editor {
   width: 100%;
+  flex: 1;
+  min-height: 200px;
   padding: 12px;
-  border: 1px solid #c0d0e0;
+  border: 2px solid #c8ced8;
   border-radius: 4px;
   font-family: inherit;
   font-size: 14px;
   resize: vertical;
   background: white;
   color: #1e2a3a;
+  box-sizing: border-box;
 }
 
 .response-editor:focus {
   outline: none;
-  border-color: #0061a5;
-  box-shadow: 0 0 0 3px rgba(0, 97, 165, 0.2);
+  border-color: #475673;
+  box-shadow: 0 0 0 3px rgba(71, 86, 115, 0.2);
 }
 
 .detail-actions {
@@ -209,22 +208,22 @@
 
 .detail-actions :global(.chakra-button) {
   background: white !important;
-  border: 1px solid #0061a5 !important;
-  color: #0061a5 !important;
+  border: 2px solid #475673 !important;
+  color: #475673 !important;
 }
 
 .detail-actions :global(.chakra-button:hover) {
-  background: #e6f0fa !important;
+  background: #e8ecf0 !important;
 }
 
 .detail-actions :global(.chakra-button:first-child) {
-  background: #0061a5 !important;
+  background: #475673 !important;
   color: white !important;
   border: none !important;
 }
 
 .detail-actions :global(.chakra-button:first-child:hover) {
-  background: #004a80 !important;
+  background: #3d4a5f !important;
 }
 
 /* Адаптивность */
@@ -240,20 +239,16 @@
   .detail-content {
     grid-template-columns: 1fr;
   }
-  
-  .action-buttons {
-    flex-wrap: wrap;
-  }
 }
 
 .ticket-row.reviewed {
-  opacity: 0.8;
-  background-color: #edf2f9 !important;
+  opacity: 0.85;
+  background-color: #f8f8f8 !important;
 }
 
 .ticket-row.reviewed:hover {
   opacity: 1;
-  background-color: #e1ecfe !important;
+  background-color: #f5f5f5 !important;
 }
 
 .spinner-wrapper {
@@ -268,15 +263,16 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 150px;
-  background: #f5f9ff;
-  border: 1px solid #c0d0e0;
+  flex: 1;
+  min-height: 200px;
+  background: #f5f7fa;
+  border: 2px solid #c8ced8;
   border-radius: 4px;
   gap: 15px;
 }
 
 .response-spinner p {
-  color: #0061a5;
+  color: #475673;
   margin: 0;
   font-size: 14px;
 }
