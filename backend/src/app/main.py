@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from src.app.api.main import api_router
 from src.app.core.settings import get_project_settings
+from src.app.modules.processor import get_email_processor
 
 project_settings = get_project_settings()
 
@@ -17,7 +18,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     This function is used to manage the startup and shutdown events of the FastAPI application.
     It initializes the application and performs any necessary cleanup on shutdown.
     """
+    email_worker = get_email_processor()
+    email_worker.start()
     yield
+    await email_worker.stop()
 
 app = FastAPI(lifespan=lifespan)
 

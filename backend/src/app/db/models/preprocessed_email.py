@@ -8,14 +8,15 @@ from sqlmodel import Field, SQLModel
 
 class PreprocessedEmailBase(SQLModel):
     date: datetime.date
-    fio: str
-    object: str
-    object_number: str
-    object_type: str
-    phone_number: str
+    fio: str | None
+    object: str | None
+    object_number: str | None
+    object_type: str | None
+    phone_number: str | None
     email: EmailStr
     emotional_color: str
     question: str
+    short_question: str
 
 
 class PreprocessedEmail(PreprocessedEmailBase, table=True):
@@ -24,7 +25,7 @@ class PreprocessedEmail(PreprocessedEmailBase, table=True):
     id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
 
 
-class UserCreate(PreprocessedEmailBase):
+class PreprocessedEmailCreate(PreprocessedEmailBase):
     @field_serializer("email")
     def serialize_email(self, email: EmailStr) -> str:
         return email.lower()

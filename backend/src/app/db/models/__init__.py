@@ -1,7 +1,7 @@
 from sqlmodel import SQLModel
 
 from src.app.db.models.user import User
-from src.app.db.models.preprocessed_emal import PreprocessedEmail
+from src.app.db.models.preprocessed_email import PreprocessedEmail
 
 __all__ = (
     "SQLModel",
