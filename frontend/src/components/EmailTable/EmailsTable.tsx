@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Spinner, Button } from '@chakra-ui/react';
-import * as XLSX from 'xlsx';
 import './EmailsTable.css';
 import type { Ticket, ToneType } from './emails-table.model';
 import ActionButtons from '../../features/ActionButtons/ActionsButtons';
@@ -21,6 +20,7 @@ const EmailsTable: React.FC = () => {
   const [generatingId, setGeneratingId] = useState<number | null>(null);
   const [aiResponses, setAiResponses] = useState<Record<number, string>>({});
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc'); // По умолчанию сначала новые
+  // const [downloading, setDownloading] = useState<'csv' | 'xlsx' | null>(null);
 
   useEffect(() => {
     setTimeout(() => {
@@ -68,62 +68,47 @@ const EmailsTable: React.FC = () => {
     }, 2000);
   };
 
-  const downloadCsv = async (): Promise<void> => {
-    try {
-      const headers = ['id;дата;фио;объект;телефон;email;заводские номера;тип приборов;эмоциональный окрас;суть вопроса'];
-
-      const rows = tickets.map(ticket =>
-        `${ticket.id};${new Date(ticket.date).toLocaleString('ru-RU')};${ticket.fullName};${ticket.object};${ticket.phone};${ticket.email};${ticket.serialNumbers};${ticket.deviceType};${ticket.emotionalTone};${ticket.issueSummary}`
-      );
-
-      const csvText = "\uFEFF" + [...headers, ...rows].join('\n');
-
-      const blob = new Blob([csvText], {
-        type: 'text/csv;charset=utf-8;'
+  const downloadFile = async (type: 'csv' | 'xlsx'): Promise<void> => {
+    try {      
+      const endpoint = type === 'csv' 
+        ? 'http://localhost:8000/api/v1/preprocessed_email/csv?skip=0&limit=1000'
+        : 'http://localhost:8000/api/v1/preprocessed_email/xlsx?skip=0&limit=1000';
+      
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          'Accept': type === 'csv' ? 'text/csv' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        },
       });
 
-      const url = URL.createObjectURL(blob);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Получаем blob из ответа
+      const blob = await response.blob();
+      
+      // Создаем URL для скачивания
+      const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'tickets.csv';
-
+      a.download = type === 'csv' ? 'tickets.csv' : 'tickets.xlsx';
+      
+      // Добавляем в DOM, кликаем и удаляем
       document.body.appendChild(a);
       a.click();
       a.remove();
-      URL.revokeObjectURL(url);
+      
+      // Освобождаем URL
+      window.URL.revokeObjectURL(url);
 
-    } catch (e) {
-      console.error(e);
-      alert('Ошибка скачивания CSV');
+    } catch (error) {
+      console.error(`Ошибка скачивания ${type.toUpperCase()}:`, error);
     }
   };
 
-  const downloadXlsx = (): void => {
-    try {
-      const data = tickets.map(ticket => ({
-        id: ticket.id,
-        дата: new Date(ticket.date).toLocaleString('ru-RU'),
-        фио: ticket.fullName,
-        объект: ticket.object,
-        телефон: ticket.phone,
-        email: ticket.email,
-        'заводские номера': ticket.serialNumbers,
-        'тип приборов': ticket.deviceType,
-        'эмоциональный окрас': ticket.emotionalTone,
-        'суть вопроса': ticket.issueSummary,
-      }));
-
-      const worksheet = XLSX.utils.json_to_sheet(data);
-
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Обращения");
-
-      XLSX.writeFile(workbook, "tickets.xlsx");
-    } catch (e) {
-      console.error(e);
-      alert('Ошибка скачивания XLSX');
-    }
-  };
+  const downloadCsv = (): Promise<void> => downloadFile('csv');
+  const downloadXlsx = (): Promise<void> => downloadFile('xlsx');
 
   const handleSendResponse = (ticketId: number): void => {
     setTickets((prev: Ticket[]) => prev.map((t: Ticket) =>
