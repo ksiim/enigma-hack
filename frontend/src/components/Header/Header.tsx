@@ -24,12 +24,12 @@ export default function Header({ page, setPage }: Props) {
         >
           Таблица
         </button>
-        <button
+        {/* <button
           onClick={() => setPage("knowledgeBase")}
           className={`nav-button ${page === "knowledgeBase" ? "nav-button--active" : ""}`}
         >
           База знаний
-        </button>
+        </button> */}
       </nav>
     </header>
   );
