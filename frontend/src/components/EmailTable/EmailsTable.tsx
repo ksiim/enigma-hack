@@ -75,7 +75,7 @@ const EmailsTable: React.FC = () => {
         originalMessage: apiTicket.question,
       }));
 
-      const TEMPORAL_COUNT = 16
+      const TEMPORAL_COUNT = 15
       
       setTickets(transformedTickets);
       // setTotalPages(Math.ceil(data.count / limit));
