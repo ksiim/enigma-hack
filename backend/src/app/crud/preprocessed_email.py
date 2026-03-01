@@ -1,5 +1,5 @@
 from typing import Any
-from sqlalchemy import Sequence, select
+from sqlalchemy import Sequence, select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.core.settings import get_project_settings
@@ -50,3 +50,11 @@ async def delete_preprocessed_email(
     if preprocessed_email:
         await session.delete(preprocessed_email)
         await session.commit()
+
+async def get_preprocessed_emails_count(
+    session: AsyncSession,
+) -> int:
+    statement = select(func.count()).select_from(PreprocessedEmail)
+    result = await session.execute(statement)
+    count = result.scalar_one()
+    return count

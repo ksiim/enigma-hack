@@ -40,9 +40,10 @@ async def get_preprocessed_emails(
     limit: int = project_settings.DEFAULT_QUERY_LIMIT,
 ) -> PreprocessedEmailsPublic:
     emails = await preprocessed_email_crud.get_preprocessed_emails(session, skip, limit)
+    count = await preprocessed_email_crud.get_preprocessed_emails_count(session)
     return PreprocessedEmailsPublic(
         data=[PreprocessedEmailPublic.model_validate(email) for email in emails],
-        count=len(emails),
+        count=count,
     )
 
 async def create_preprocessed_email(
