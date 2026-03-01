@@ -39,3 +39,14 @@ async def get_preprocessed_emails(
         statement,
     )).scalars().all()
     return preprocessed_emails
+
+async def delete_preprocessed_email(
+    session: AsyncSession,
+    preprocessed_id: int,
+) -> None:
+    statement = select(PreprocessedEmail).filter_by(id=preprocessed_id)
+    result = await session.execute(statement)
+    preprocessed_email = result.scalar_one_or_none()
+    if preprocessed_email:
+        await session.delete(preprocessed_email)
+        await session.commit()

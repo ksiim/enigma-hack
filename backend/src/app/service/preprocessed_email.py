@@ -1,6 +1,5 @@
 from io import BytesIO, StringIO
 from typing import Any, Sequence
-from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.app.core.settings import get_project_settings
@@ -75,7 +74,7 @@ async def get_preprocessed_emails_csv_stream(
 def _prepare_dataframe(emails: Sequence[PreprocessedEmail]) -> pd.DataFrame:
     return pd.DataFrame(
         [
-            data.model_dump() for data in emails
+            data.model_dump(exclude=["question", "id"]) for data in emails
         ]
     ).rename(
         columns=rename_map,
@@ -112,3 +111,9 @@ async def send_email_to_user(
         subject=subject,
         html_content=body,
     )
+
+async def delete_preprocessed_email(
+    session: AsyncSession,
+    preprocessed_id: int,
+) -> None:
+    await preprocessed_email_crud.delete_preprocessed_email(session, preprocessed_id)
