@@ -47,7 +47,7 @@ const EmailsTable: React.FC = () => {
   // Пагинация
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(0);
-  const [pageSize] = useState<number>(3);
+  const [pageSize] = useState<number>(5);
   
 
   const fetchTickets = async (skip: number = 0, limit: number = 3) => {
@@ -74,9 +74,12 @@ const EmailsTable: React.FC = () => {
         issueSummary: apiTicket.short_question,
         originalMessage: apiTicket.question,
       }));
+
+      const TEMPORAL_COUNT = 16
       
       setTickets(transformedTickets);
-      setTotalPages(Math.ceil(data.count / limit));
+      // setTotalPages(Math.ceil(data.count / limit));
+      setTotalPages(Math.ceil(TEMPORAL_COUNT / limit));
       setLoading(false);
     } catch (error) {
       console.error('Ошибка загрузки тикетов:', error);
